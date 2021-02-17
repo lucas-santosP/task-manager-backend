@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import routesTemplate from "../routes/template";
+import routesTask from "../routes/task";
 
 class AppController {
   public express: express.Application;
@@ -31,11 +32,13 @@ class AppController {
     mongoose.connect("mongodb://localhost:27017/tsnode", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
     });
   }
 
   private routes(): void {
     this.express.use("/api", routesTemplate);
+    this.express.use("/api", routesTask);
   }
 }
 
