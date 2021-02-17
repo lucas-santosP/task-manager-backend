@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Types } from "mongoose";
 import TemplateModel from "../models/template";
 import TaskModel from "../models/task";
+import UserModel from "../models/user";
 
 class TemplateController {
   static async getAll(req: Request, res: Response) {
@@ -25,11 +26,21 @@ class TemplateController {
   }
 
   static async create(req: Request, res: Response) {
+    const { userId } = req.params;
     const { title, description } = req.body;
 
     try {
-      const result = await TemplateModel.create({ _id: new Types.ObjectId(), title, description });
-      return res.status(201).json({ template: result });
+      const userFound = await UserModel.findById(userId).exec();
+      if (!userFound) return res.status(201).json("User with id not found");
+      const templateCreated = await TemplateModel.create({
+        _id: new Types.ObjectId(),
+        title,
+        description,
+      });
+      userFound.templates.push(templateCreated._id);
+      userFound.save();
+
+      return res.status(201).json({ template: templateCreated });
     } catch (error) {
       return res.status(500).json({
         message: error.message,

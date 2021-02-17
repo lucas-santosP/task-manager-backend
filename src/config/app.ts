@@ -1,7 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
-import routesTemplate from "../routes/template";
-import routesTask from "../routes/task";
+import templateRoutes from "../routes/template";
+import taskRoutes from "../routes/task";
+import userRoutes from "../routes/user";
 
 class AppController {
   public express: express.Application;
@@ -33,12 +34,14 @@ class AppController {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
+      useCreateIndex: true,
     });
   }
 
   private routes(): void {
-    this.express.use("/api", routesTemplate);
-    this.express.use("/api", routesTask);
+    this.express.use("/api", templateRoutes);
+    this.express.use("/api", taskRoutes);
+    this.express.use("/api", userRoutes);
   }
 }
 
