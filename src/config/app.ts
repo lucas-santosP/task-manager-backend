@@ -1,8 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
-import templateRoutes from "../routes/template";
-import taskRoutes from "../routes/task";
-import userRoutes from "../routes/user";
+import { TemplateRoutes, TaskRoutes, UserRoutes } from "../routes";
 
 class AppController {
   public express: express.Application;
@@ -39,9 +37,9 @@ class AppController {
   }
 
   private routes(): void {
-    this.express.use("/api", templateRoutes);
-    this.express.use("/api", taskRoutes);
-    this.express.use("/api", userRoutes);
+    this.express.use("/api", TemplateRoutes);
+    this.express.use("/api", TaskRoutes);
+    this.express.use("/api", UserRoutes);
   }
 }
 

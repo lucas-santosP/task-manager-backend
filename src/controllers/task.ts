@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import TemplateModel from "../models/template";
-import TaskModel from "../models/task";
+import { TemplateModel, TaskModel } from "../models";
 
 class TaskController {
   static async getAll(req: Request, res: Response) {
@@ -64,23 +63,22 @@ class TaskController {
   }
 
   static async delete(req: Request, res: Response) {
-    const { templateId, taskId } = req.params;
+    const { taskId } = req.params;
 
     if (!Types.ObjectId.isValid(taskId)) {
       return res.status(400).send("Invalid task id received");
     }
-    if (!Types.ObjectId.isValid(templateId)) {
-      return res.status(400).send("Invalid template id received");
-    }
 
     try {
-      const templateFound = await TemplateModel.findById(templateId).exec();
       const taskFound = await TaskModel.findById(taskId).exec();
-      if (!templateFound) return res.status(400).send(`Template with id ${templateId} not found`);
       if (!taskFound) return res.status(400).send(`Task with id ${taskId} not found`);
 
-      await templateFound.update({ $pull: { tasks: taskFound._id } }, { new: true });
-      const result = await taskFound.delete();
+      await TemplateModel.findOneAndUpdate(
+        { templates: taskFound._id },
+        { $pull: { tasks: taskFound._id } },
+      ).exec();
+      const result = await TaskModel.deleteOne({ _id: taskId }).exec();
+
       return res.status(200).json({ task: result });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });

@@ -2,11 +2,9 @@ import express from "express";
 import TemplateController from "../controllers/template";
 
 const router = express.Router();
-// router.get("/template/:userId", TemplateController.getAll);
-router.get("/template", TemplateController.getAll); //Não vai existir
-router.get("/template/:templateId", TemplateController.get);
+router.get("/template/:userId", TemplateController.getByUser);
 router.post("/template/:userId", TemplateController.create);
-router.put("/template/:templateId", TemplateController.update);
 router.delete("/template/:templateId", TemplateController.delete);
+router.put("/template/:templateId", TemplateController.update);
 
 export default router;

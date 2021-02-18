@@ -18,7 +18,3 @@ export interface IUser extends Document {
   password: String;
   templates: String[] | ITemplate[];
 }
-
-export function isTask(value: String | ITemplate): value is ITemplate {
-  return (value as ITemplate).title !== undefined;
-}

@@ -1,14 +1,22 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import TemplateModel from "../models/template";
-import TaskModel from "../models/task";
-import UserModel from "../models/user";
+import { TemplateModel, TaskModel, UserModel } from "../models";
 
 class TemplateController {
-  static async getAll(req: Request, res: Response) {
+  static async getByUser(req: Request, res: Response) {
+    const { userId } = req.params;
+
+    if (!Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user id received");
+    }
+
     try {
-      const result = await TemplateModel.find().populate("tasks").exec();
-      return res.status(200).json({ template: result, count: result.length });
+      const userFound = await UserModel.findById(userId).exec();
+      if (!userFound) return res.status(400).send(`User with id ${userId} not found`);
+      const templatesFound = await TemplateModel.find({ _id: { $in: userFound.templates } })
+        .populate("tasks")
+        .exec();
+      return res.status(200).json({ template: templatesFound, count: templatesFound.length });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
@@ -54,10 +62,11 @@ class TemplateController {
     const { title, description } = req.body;
 
     try {
-      const result = await TemplateModel.findByIdAndUpdate(templateId, {
-        title,
-        description,
-      }).exec();
+      const result = await TemplateModel.findByIdAndUpdate(
+        templateId,
+        { title, description },
+        { new: true },
+      ).exec();
       return res.status(200).json({ template: result });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
@@ -75,11 +84,13 @@ class TemplateController {
       const templateFound = await TemplateModel.findById(templateId).exec();
       if (!templateFound) return res.status(400).send(`Template with id ${templateId} not found`);
 
-      for (const taskId of templateFound.tasks) {
-        await TaskModel.deleteOne({ _id: taskId });
-      }
-
+      await TaskModel.remove({ _id: { $in: templateFound.tasks } }).exec();
+      await UserModel.findOneAndUpdate(
+        { templates: templateFound._id },
+        { $pull: { templates: templateFound._id } },
+      ).exec();
       const result = await TemplateModel.deleteOne({ _id: templateId }).exec();
+
       return res.status(200).json({ template: result });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
