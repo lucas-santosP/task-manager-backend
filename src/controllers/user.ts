@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { TemplateModel, TaskModel, UserModel } from "../models";
-import { Encrypter, TokenGenerator } from "../shared";
+import { Encrypter, TokenGenerator, Validator } from "../shared";
 
 class UserController {
   static async getAll(req: Request, res: Response) {
     try {
-      const usersFound = await UserModel.find().select("_id name email").exec();
+      const usersFound = await UserModel.find().exec();
       return res.status(200).json({ user: usersFound, count: usersFound.length });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
@@ -15,6 +15,15 @@ class UserController {
 
   static async create(req: Request, res: Response) {
     const { email, name, password } = req.body;
+
+    const validationBody = Validator.validateObjectKeys(req.body, "email name password");
+    if (!validationBody.isOk) {
+      return res.status(400).send(validationBody.message);
+    }
+    const validationEmail = Validator.validateEmail(email);
+    if (!validationEmail.isOk) {
+      return res.status(400).send(validationEmail.message);
+    }
 
     try {
       const userFound = await UserModel.findOne({ email }).exec();
@@ -41,6 +50,15 @@ class UserController {
   static async login(req: Request, res: Response) {
     const { email, password } = req.body;
 
+    const validationBody = Validator.validateObjectKeys(req.body, "email password");
+    if (!validationBody.isOk) {
+      return res.status(400).send(validationBody.message);
+    }
+    const validationEmail = Validator.validateEmail(email);
+    if (!validationEmail.isOk) {
+      return res.status(400).send(validationEmail.message);
+    }
+
     try {
       const userFound = await UserModel.findOne({ email }).exec();
       if (!userFound) return res.status(400).send("User not found");
@@ -66,6 +84,20 @@ class UserController {
 
     if (!Types.ObjectId.isValid(userId)) {
       return res.status(400).send("Invalid user id received");
+    }
+    if (req.userId !== userId) {
+      return res.status(401).send("Unauthorized");
+    }
+    const validationBody = Validator.validateObjectKeys(
+      req.body,
+      "email name password newPassword",
+    );
+    if (!validationBody.isOk) {
+      return res.status(400).send(validationBody.message);
+    }
+    const validationEmail = Validator.validateEmail(email);
+    if (!validationEmail.isOk) {
+      return res.status(400).send(validationEmail.message);
     }
 
     try {
@@ -98,6 +130,9 @@ class UserController {
 
     if (!Types.ObjectId.isValid(userId)) {
       return res.status(400).send("Invalid task id received");
+    }
+    if (req.userId !== userId) {
+      return res.status(401).send("Unauthorized");
     }
 
     try {
