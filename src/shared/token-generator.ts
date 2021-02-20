@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import env from "../env";
+
 export default class TokenGenerator {
   secretKey: string;
 
   constructor() {
-    console.log(env.ACCESS_TOKEN_SECRET);
     this.secretKey = env.ACCESS_TOKEN_SECRET;
   }
 
