@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { TokenGenerator } from "../shared";
 
+interface IDecodedData {
+  _id: string;
+  email: string;
+}
+
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -8,11 +13,9 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
     const tokenGenerator = new TokenGenerator();
     const decodedData = tokenGenerator.verify(token);
-    console.log(decodedData);
+    if (!(decodedData as IDecodedData)._id) return res.status(401).send("Invalid token");
 
-    (decodedData as any).userId = (decodedData as any)._id;
-    if (!(decodedData as any).userId) return res.status(401).send("Unauthorized");
-
+    req.userId = (decodedData as IDecodedData)._id;
     next();
   } catch (error) {
     console.log(error.message);
