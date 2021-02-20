@@ -1,20 +1,20 @@
 import { Document } from "mongoose";
 
 export interface ITask extends Document {
-  title: String;
-  description: String;
+  title: string;
+  description: string;
   status: "to do" | "doing" | "done";
 }
 
 export interface ITemplate extends Document {
-  title: String;
-  description: String;
-  tasks: String[] | ITask[];
+  title: string;
+  description: string;
+  tasks: string[] | ITask[];
 }
 
 export interface IUser extends Document {
-  email: String;
-  name: String;
-  password: String;
-  templates: String[] | ITemplate[];
+  email: string;
+  name: string;
+  password: string;
+  templates: string[] | ITemplate[];
 }

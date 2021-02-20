@@ -46,7 +46,7 @@ class TemplateController {
         description,
       });
       userFound.templates.push(templateCreated._id);
-      userFound.save();
+      await userFound.save();
 
       return res.status(201).json({ template: templateCreated });
     } catch (error) {

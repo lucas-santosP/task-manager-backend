@@ -35,7 +35,7 @@ class TaskController {
         status,
       });
       templateFound.tasks.push(taskCreated._id);
-      templateFound.save();
+      await templateFound.save();
       return res.status(200).json({ task: taskCreated });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });

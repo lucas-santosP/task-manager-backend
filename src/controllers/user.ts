@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { TemplateModel, TaskModel, UserModel } from "../models";
+import { Encrypter, TokenGenerator } from "../shared";
 
 class UserController {
   static async getAll(req: Request, res: Response) {
@@ -16,15 +17,44 @@ class UserController {
     const { email, name, password } = req.body;
 
     try {
+      const userFound = await UserModel.findOne({ email }).exec();
+      if (userFound) return res.status(400).send("User already exist");
+
+      const encrypter = new Encrypter();
+      const tokenGenerator = new TokenGenerator();
+
+      const hashedPassword = await encrypter.generate(password);
       const userCreated = await UserModel.create({
         _id: new Types.ObjectId(),
         email,
         name,
-        password,
+        password: hashedPassword,
       });
-      const result = { _id: userCreated._id, name: userCreated.name, email: userCreated.email };
+      const token = tokenGenerator.generate({ _id: userCreated._id, email: userCreated.email });
 
-      return res.status(200).json({ user: result });
+      return res.status(200).json({ user: userCreated, token });
+    } catch (error) {
+      return res.status(500).json({ message: error.message, error });
+    }
+  }
+
+  static async login(req: Request, res: Response) {
+    const { email, password } = req.body;
+
+    try {
+      const userFound = await UserModel.findOne({ email }).exec();
+      if (!userFound) return res.status(400).send("User not found");
+
+      const encrypter = new Encrypter();
+      const tokenGenerator = new TokenGenerator();
+
+      const passwordIsValid = await encrypter.compare(password, userFound.password);
+      if (passwordIsValid) {
+        const token = tokenGenerator.generate({ _id: userFound._id, email: userFound.email });
+        return res.status(200).json({ user: userFound, token });
+      }
+
+      return res.status(400).send("Invalid credentials");
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
@@ -32,23 +62,32 @@ class UserController {
 
   static async update(req: Request, res: Response) {
     const { userId } = req.params;
-    const { email, name, password } = req.body;
+    const { email, name, password, newPassword } = req.body;
 
     if (!Types.ObjectId.isValid(userId)) {
       return res.status(400).send("Invalid user id received");
     }
-    //encrypt password
 
     try {
-      const userUpdated = await UserModel.findByIdAndUpdate(
-        userId,
-        { email, name, password },
-        { new: true },
-      )
-        .select("_id name email")
-        .exec();
+      const userFound = await UserModel.findOne({ email }).exec();
+      if (!userFound) return res.status(400).send("User not found");
 
-      return res.status(200).json({ user: userUpdated });
+      const encrypter = new Encrypter();
+      const passwordIsValid = await encrypter.compare(password, userFound.password);
+
+      if (passwordIsValid) {
+        if (password !== newPassword) {
+          const hashedNewPassword = await encrypter.generate(newPassword);
+          userFound.password = hashedNewPassword;
+        }
+        userFound.email = email;
+        userFound.name = name;
+        const userUpdated = await userFound.save();
+
+        return res.status(200).json({ user: userUpdated });
+      }
+
+      return res.status(400).send("Invalid credentials");
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
