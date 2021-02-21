@@ -1,11 +1,10 @@
 import jwt from "jsonwebtoken";
-import env from "../env";
 
 export default class TokenGenerator {
-  secretKey: string;
+  secretKey: string | undefined;
 
   constructor() {
-    this.secretKey = env.ACCESS_TOKEN_SECRET;
+    this.secretKey = process.env.ACCESS_TOKEN_SECRET;
   }
 
   generate(value: Object) {

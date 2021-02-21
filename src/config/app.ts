@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { TemplateRoutes, TaskRoutes, UserRoutes } from "../routes";
 
-class AppController {
+class App {
   public express: express.Application;
 
   constructor() {
@@ -43,5 +43,4 @@ class AppController {
   }
 }
 
-const app = new AppController();
-export default app.express;
+export default App;
