@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export default class TokenGenerator {
+class TokenGenerator {
   secretKey: string | undefined;
 
   constructor() {
@@ -8,16 +8,18 @@ export default class TokenGenerator {
   }
 
   generate(value: Object) {
-    if (!this.secretKey) throw new Error("Invalid param secretKey");
+    if (!this.secretKey) throw new Error("Missing env value secretKey");
 
     const token = jwt.sign(value, this.secretKey);
     return token;
   }
 
   verify(token: string) {
-    if (!this.secretKey) throw new Error("Invalid param secretKey");
+    if (!this.secretKey) throw new Error("Missing env value secretKey");
 
     const decodedData = jwt.verify(token, this.secretKey);
     return decodedData;
   }
 }
+
+export default new TokenGenerator();

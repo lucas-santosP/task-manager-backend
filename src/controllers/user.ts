@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { TemplateModel, TaskModel, UserModel } from "../models";
-import { Encrypter, TokenGenerator, Validator } from "../shared";
+import { encrypter, tokenGenerator, validator } from "../shared";
 
 class UserController {
   static async getAll(req: Request, res: Response) {
@@ -16,11 +16,11 @@ class UserController {
   static async create(req: Request, res: Response) {
     const { email, name, password } = req.body;
 
-    const validationBody = Validator.validateObjectKeys(req.body, "email name password");
+    const validationBody = validator.validateObjectKeys(req.body, "email name password");
     if (!validationBody.isOk) {
       return res.status(400).send(validationBody.message);
     }
-    const validationEmail = Validator.validateEmail(email);
+    const validationEmail = validator.validateEmail(email);
     if (!validationEmail.isOk) {
       return res.status(400).send(validationEmail.message);
     }
@@ -28,9 +28,6 @@ class UserController {
     try {
       const userFound = await UserModel.findOne({ email }).exec();
       if (userFound) return res.status(400).send("User already exist");
-
-      const encrypter = new Encrypter();
-      const tokenGenerator = new TokenGenerator();
 
       const hashedPassword = await encrypter.generate(password);
       const userCreated = await UserModel.create({
@@ -53,11 +50,11 @@ class UserController {
   static async login(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    const validationBody = Validator.validateObjectKeys(req.body, "email password");
+    const validationBody = validator.validateObjectKeys(req.body, "email password");
     if (!validationBody.isOk) {
       return res.status(400).send(validationBody.message);
     }
-    const validationEmail = Validator.validateEmail(email);
+    const validationEmail = validator.validateEmail(email);
     if (!validationEmail.isOk) {
       return res.status(400).send(validationEmail.message);
     }
@@ -65,9 +62,6 @@ class UserController {
     try {
       const userFound = await UserModel.findOne({ email }).exec();
       if (!userFound) return res.status(400).send("User not found");
-
-      const encrypter = new Encrypter();
-      const tokenGenerator = new TokenGenerator();
 
       const passwordIsValid = await encrypter.compare(password, userFound.password);
       if (!passwordIsValid) return res.status(400).send("Invalid credentials");
@@ -93,14 +87,14 @@ class UserController {
     if (req.userId !== userId) {
       return res.status(401).send("Unauthorized");
     }
-    const validationBody = Validator.validateObjectKeys(
+    const validationBody = validator.validateObjectKeys(
       req.body,
       "email name password newPassword",
     );
     if (!validationBody.isOk) {
       return res.status(400).send(validationBody.message);
     }
-    const validationEmail = Validator.validateEmail(email);
+    const validationEmail = validator.validateEmail(email);
     if (!validationEmail.isOk) {
       return res.status(400).send(validationEmail.message);
     }
@@ -109,7 +103,6 @@ class UserController {
       const userFound = await UserModel.findOne({ email }).exec();
       if (!userFound) return res.status(400).send("User not found");
 
-      const encrypter = new Encrypter();
       const passwordIsValid = await encrypter.compare(password, userFound.password);
       if (!passwordIsValid) return res.status(400).send("Invalid credentials");
 

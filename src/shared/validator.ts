@@ -5,8 +5,8 @@ interface validation {
   message: string;
 }
 
-export default class Validator {
-  static validateObjectKeys(object: object, keysToCheck: string): validation {
+class Validator {
+  validateObjectKeys(object: object, keysToCheck: string): validation {
     let message = "";
     let isOk = true;
     const keys = keysToCheck.trim().split(" ");
@@ -22,7 +22,7 @@ export default class Validator {
     return { isOk, message };
   }
 
-  static validateEmail(email: string): validation {
+  validateEmail(email: string): validation {
     let isOk = validator.isEmail(email);
 
     return {
@@ -31,3 +31,5 @@ export default class Validator {
     };
   }
 }
+
+export default new Validator();

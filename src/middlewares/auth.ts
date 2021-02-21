@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { TokenGenerator } from "../shared";
+import { tokenGenerator } from "../shared";
 
 interface IDecodedData {
   _id: string;
@@ -11,7 +11,6 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(400).send("No token received");
 
-    const tokenGenerator = new TokenGenerator();
     const decodedData = tokenGenerator.verify(token);
     if (!(decodedData as IDecodedData)._id) return res.status(401).send("Invalid token");
 

@@ -1,5 +1,5 @@
-import Encrypter from "./encrypter";
-import TokenGenerator from "./token-generator";
-import Validator from "./validator";
+import encrypter from "./encrypter";
+import tokenGenerator from "./token-generator";
+import validator from "./validator";
 
-export { Encrypter, TokenGenerator, Validator };
+export { encrypter, tokenGenerator, validator };
