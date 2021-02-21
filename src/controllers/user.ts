@@ -41,7 +41,10 @@ class UserController {
       });
       const token = tokenGenerator.generate({ _id: userCreated._id, email: userCreated.email });
 
-      return res.status(200).json({ user: userCreated, token });
+      return res.status(201).json({
+        user: { _id: userCreated._id, name: userCreated.name, email: userCreated.email },
+        token,
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
@@ -67,12 +70,14 @@ class UserController {
       const tokenGenerator = new TokenGenerator();
 
       const passwordIsValid = await encrypter.compare(password, userFound.password);
-      if (passwordIsValid) {
-        const token = tokenGenerator.generate({ _id: userFound._id, email: userFound.email });
-        return res.status(200).json({ user: userFound, token });
-      }
+      if (!passwordIsValid) return res.status(400).send("Invalid credentials");
 
-      return res.status(400).send("Invalid credentials");
+      const token = tokenGenerator.generate({ _id: userFound._id, email: userFound.email });
+
+      return res.status(200).json({
+        user: { _id: userFound._id, name: userFound.name, email: userFound.email },
+        token,
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
@@ -106,20 +111,19 @@ class UserController {
 
       const encrypter = new Encrypter();
       const passwordIsValid = await encrypter.compare(password, userFound.password);
+      if (!passwordIsValid) return res.status(400).send("Invalid credentials");
 
-      if (passwordIsValid) {
-        if (password !== newPassword) {
-          const hashedNewPassword = await encrypter.generate(newPassword);
-          userFound.password = hashedNewPassword;
-        }
-        userFound.email = email;
-        userFound.name = name;
-        const userUpdated = await userFound.save();
-
-        return res.status(200).json({ user: userUpdated });
+      if (password !== newPassword) {
+        const hashedNewPassword = await encrypter.generate(newPassword);
+        userFound.password = hashedNewPassword;
       }
+      userFound.email = email;
+      userFound.name = name;
+      const userUpdated = await userFound.save();
 
-      return res.status(400).send("Invalid credentials");
+      return res.status(200).json({
+        user: { _id: userUpdated._id, name: userUpdated.name, email: userUpdated.email },
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
@@ -137,7 +141,7 @@ class UserController {
 
     try {
       const userFound = await UserModel.findById(userId).exec();
-      if (!userFound) return res.status(400).send(`User with id ${userId} not found`);
+      if (!userFound) return res.status(400).send("User not found");
 
       const userTemplates = await TemplateModel.find({ _id: { $in: userFound.templates } }).exec();
       for (const template of userTemplates) {
