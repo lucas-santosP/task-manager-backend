@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import { TemplateRoutes, TaskRoutes, UserRoutes } from "../routes";
 
 class App {
@@ -15,12 +16,7 @@ class App {
   private middlewares(): void {
     this.express.disable("x-powered-by");
     this.express.use(express.json());
-    this.express.use((req, res, next) => {
-      res.set("access-control-allow-origin", "*");
-      res.set("access-control-allow-methods", "*");
-      res.set("access-control-allow-headers", "*");
-      next();
-    });
+    this.express.use(cors());
     this.express.use((req, res, next) => {
       res.type("json");
       next();
