@@ -4,15 +4,6 @@ import { TemplateModel, TaskModel, UserModel } from "../models";
 import { encrypter, tokenGenerator, validator } from "../shared";
 
 class UserController {
-  static async getAll(req: Request, res: Response) {
-    try {
-      const usersFound = await UserModel.find().exec();
-      return res.status(200).json({ user: usersFound, count: usersFound.length });
-    } catch (error) {
-      return res.status(500).json({ message: error.message, error });
-    }
-  }
-
   static async create(req: Request, res: Response) {
     const { email, name, password } = req.body;
 
