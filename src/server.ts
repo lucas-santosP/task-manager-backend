@@ -1,7 +1,7 @@
-import App from "./config/app";
 import dotenv from "dotenv";
 dotenv.config();
 
+import App from "./config/app";
 const app = new App().express;
 const port = process.env.PORT || 3333;
 
