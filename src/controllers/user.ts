@@ -77,6 +77,28 @@ class UserController {
     }
   }
 
+  static async auth(req: Request, res: Response) {
+    const { userId } = req.params;
+
+    if (!Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user id received");
+    }
+    if (req.userId !== userId) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    try {
+      const userFound = await UserModel.findOne({ _id: userId }).exec();
+      if (!userFound) return res.status(400).send("User not found");
+
+      return res.status(200).json({
+        user: { _id: userFound._id, name: userFound.name, email: userFound.email },
+      });
+    } catch (error) {
+      return res.status(500).json({ message: error.message, error });
+    }
+  }
+
   static async update(req: Request, res: Response) {
     const { userId } = req.params;
     const { email, name, password, newPassword } = req.body;
@@ -89,7 +111,7 @@ class UserController {
     }
     const validationBody = validator.validateObjectKeys(
       req.body,
-      "email name password newPassword",
+      "email name password newPassword"
     );
     if (!validationBody.isOk) {
       return res.status(400).send(validationBody.message);
