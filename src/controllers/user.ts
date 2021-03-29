@@ -102,7 +102,7 @@ class UserController {
     }
     const validationBody = validator.validateObjectKeys(
       req.body,
-      "email name password newPassword"
+      "email name password newPassword",
     );
     if (!validationBody.isOk) {
       return res.status(400).send(validationBody.message);
