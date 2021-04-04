@@ -3,12 +3,7 @@ import { ITask } from "../interfaces";
 
 const TaskSchema = new Schema(
   {
-    title: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-    description: {
+    name: {
       type: String,
       trim: true,
       required: true,

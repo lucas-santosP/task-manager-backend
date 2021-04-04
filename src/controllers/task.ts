@@ -14,7 +14,7 @@ class TaskController {
 
   static async create(req: Request, res: Response) {
     const { templateId } = req.params;
-    const { title, description, status } = req.body;
+    const { name, status } = req.body;
 
     if (!Types.ObjectId.isValid(templateId)) {
       return res.status(400).send("Invalid template id received");
@@ -30,8 +30,7 @@ class TaskController {
 
       const taskCreated = await TaskModel.create({
         _id: new Types.ObjectId(),
-        title,
-        description,
+        name,
         status,
       });
       templateFound.tasks.push(taskCreated._id);
@@ -44,7 +43,7 @@ class TaskController {
 
   static async update(req: Request, res: Response) {
     const { taskId } = req.params;
-    const { title, description, status } = req.body;
+    const { name, status } = req.body;
 
     if (!Types.ObjectId.isValid(taskId)) {
       return res.status(400).send("Invalid task id received");
@@ -53,7 +52,7 @@ class TaskController {
     try {
       const taskUpdated = await TaskModel.findByIdAndUpdate(
         taskId,
-        { title, description, status },
+        { name, status },
         { new: true },
       ).exec();
       return res.status(200).json({ task: taskUpdated });
