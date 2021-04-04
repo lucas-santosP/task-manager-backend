@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
+import { validator } from "../shared";
 import { TemplateModel, TaskModel, UserModel } from "../models";
 
 class TemplateController {
@@ -38,13 +39,14 @@ class TemplateController {
 
   static async create(req: Request, res: Response) {
     const { userId } = req;
-    const { title, description } = req.body;
+    const { name, description } = req.body;
 
-    if (!userId) {
-      return res.status(401).send("Unauthorized");
-    }
     if (!Types.ObjectId.isValid(userId)) {
       return res.status(400).send("Invalid user id received");
+    }
+    const validationBody = validator.validateObjectKeys(req.body, "name description");
+    if (!validationBody.isOk) {
+      return res.status(400).send(validationBody.message);
     }
 
     try {
@@ -52,7 +54,7 @@ class TemplateController {
       if (!userFound) return res.status(201).json("User with id not found");
       const templateCreated = await TemplateModel.create({
         _id: new Types.ObjectId(),
-        title,
+        name,
         description,
       });
       userFound.templates.push(templateCreated._id);
@@ -69,12 +71,20 @@ class TemplateController {
 
   static async update(req: Request, res: Response) {
     const { templateId } = req.params;
-    const { title, description } = req.body;
+    const { name, description } = req.body;
+
+    if (!Types.ObjectId.isValid(templateId)) {
+      return res.status(400).send("Invalid user id received");
+    }
+    const validationBody = validator.validateObjectKeys(req.body, "name description");
+    if (!validationBody.isOk) {
+      return res.status(400).send(validationBody.message);
+    }
 
     try {
       const result = await TemplateModel.findByIdAndUpdate(
         templateId,
-        { title, description },
+        { name, description },
         { new: true },
       ).exec();
       return res.status(200).json({ template: result });

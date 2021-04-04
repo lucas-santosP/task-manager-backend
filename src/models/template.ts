@@ -3,7 +3,7 @@ import { ITemplate } from "../interfaces";
 
 const TemplateSchema = new Schema(
   {
-    title: {
+    name: {
       type: String,
       trim: true,
       required: true,
