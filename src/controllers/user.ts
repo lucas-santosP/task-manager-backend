@@ -151,9 +151,9 @@ class UserController {
 
       const userTemplates = await TemplateModel.find({ _id: { $in: userFound.templates } }).exec();
       for (const template of userTemplates) {
-        await TaskModel.remove({ _id: { $in: template.tasks } }).exec();
+        await TaskModel.deleteMany({ _id: { $in: template.tasks } }).exec();
       }
-      await TemplateModel.remove({ _id: { $in: userFound.templates } }).exec();
+      await TemplateModel.deleteMany({ _id: { $in: userFound.templates } }).exec();
       const result = await UserModel.deleteOne({ _id: userId }).exec();
 
       return res.status(200).json({ user: result });

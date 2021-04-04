@@ -104,7 +104,7 @@ class TemplateController {
       const templateFound = await TemplateModel.findById(templateId).exec();
       if (!templateFound) return res.status(400).send(`Template with id ${templateId} not found`);
 
-      await TaskModel.remove({ _id: { $in: templateFound.tasks } }).exec();
+      await TaskModel.deleteMany({ _id: { $in: templateFound.tasks } }).exec();
       await UserModel.findOneAndUpdate(
         { templates: templateFound._id },
         { $pull: { templates: templateFound._id } },
