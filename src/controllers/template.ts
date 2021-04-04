@@ -4,8 +4,11 @@ import { TemplateModel, TaskModel, UserModel } from "../models";
 
 class TemplateController {
   static async getByUser(req: Request, res: Response) {
-    const { userId } = req.params;
+    const { userId } = req;
 
+    if (!userId) {
+      return res.status(401).send("Unauthorized");
+    }
     if (!Types.ObjectId.isValid(userId)) {
       return res.status(400).send("Invalid user id received");
     }
@@ -16,7 +19,7 @@ class TemplateController {
       const templatesFound = await TemplateModel.find({ _id: { $in: userFound.templates } })
         .populate("tasks")
         .exec();
-      return res.status(200).json({ template: templatesFound, count: templatesFound.length });
+      return res.status(200).json({ templates: templatesFound, count: templatesFound.length });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
@@ -34,8 +37,15 @@ class TemplateController {
   }
 
   static async create(req: Request, res: Response) {
-    const { userId } = req.params;
+    const { userId } = req;
     const { title, description } = req.body;
+
+    if (!userId) {
+      return res.status(401).send("Unauthorized");
+    }
+    if (!Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user id received");
+    }
 
     try {
       const userFound = await UserModel.findById(userId).exec();
