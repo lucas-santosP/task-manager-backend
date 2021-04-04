@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { TemplateModel, TaskModel } from "../models";
+import { validator } from "../shared";
 
 class TaskController {
   static async getAll(req: Request, res: Response) {
@@ -19,9 +20,13 @@ class TaskController {
     if (!Types.ObjectId.isValid(templateId)) {
       return res.status(400).send("Invalid template id received");
     }
+    const validationBody = validator.validateObjectKeys(req.body, "name status");
+    if (!validationBody.isOk) {
+      return res.status(400).send(validationBody.message);
+    }
     const validStatus = ["to do", "doing", "done"];
     if (!validStatus.includes(status)) {
-      return res.status(400).json({ message: "Invalid status field" });
+      return res.status(400).json({ message: "Invalid field status" });
     }
 
     try {
@@ -47,6 +52,14 @@ class TaskController {
 
     if (!Types.ObjectId.isValid(taskId)) {
       return res.status(400).send("Invalid task id received");
+    }
+    const validationBody = validator.validateObjectKeys(req.body, "name status");
+    if (!validationBody.isOk) {
+      return res.status(400).send(validationBody.message);
+    }
+    const validStatus = ["to do", "doing", "done"];
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid field status" });
     }
 
     try {
