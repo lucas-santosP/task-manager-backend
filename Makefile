@@ -14,3 +14,6 @@ down:
 
 logs:
 	docker-compose logs -f
+
+logs-api:
+	docker logs -f api
