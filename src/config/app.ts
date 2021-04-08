@@ -1,6 +1,6 @@
 import express from "express";
-import mongoose from "mongoose";
 import cors from "cors";
+import connectDB from "./database";
 import { TemplateRoutes, TaskRoutes, UserRoutes } from "../routes";
 
 class App {
@@ -24,12 +24,7 @@ class App {
   }
 
   private database(): void {
-    mongoose.connect("mongodb://localhost:27017/tsnode", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
-    });
+    connectDB();
   }
 
   private routes(): void {
