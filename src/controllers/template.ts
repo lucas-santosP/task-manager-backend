@@ -86,7 +86,10 @@ class TemplateController {
         templateId,
         { name, description },
         { new: true },
-      ).exec();
+      )
+        .populate("tasks")
+        .exec();
+
       return res.status(200).json({ template: result });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
@@ -111,7 +114,7 @@ class TemplateController {
       ).exec();
       const result = await TemplateModel.deleteOne({ _id: templateId }).exec();
 
-      return res.status(200).json({ template: result });
+      return res.status(200).json({ result });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }

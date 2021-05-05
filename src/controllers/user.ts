@@ -156,7 +156,7 @@ class UserController {
       await TemplateModel.deleteMany({ _id: { $in: userFound.templates } }).exec();
       const result = await UserModel.deleteOne({ _id: userId }).exec();
 
-      return res.status(200).json({ user: result });
+      return res.status(200).json({ result });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }

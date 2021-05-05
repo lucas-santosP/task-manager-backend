@@ -91,7 +91,7 @@ class TaskController {
       ).exec();
       const result = await TaskModel.deleteOne({ _id: taskId }).exec();
 
-      return res.status(200).json({ task: result });
+      return res.status(200).json({ result });
     } catch (error) {
       return res.status(500).json({ message: error.message, error });
     }
