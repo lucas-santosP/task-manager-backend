@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { TemplateModel, TaskModel, UserModel } from "../models";
-import { encrypter, tokenGenerator, validator } from "../shared";
+import { encrypter, tokenGenerator, validator, createInitialTemplates } from "../shared";
 
 class UserController {
   static async create(req: Request, res: Response) {
@@ -28,6 +28,8 @@ class UserController {
         password: hashedPassword,
       });
       const token = tokenGenerator.generate({ _id: userCreated._id, email: userCreated.email });
+
+      await createInitialTemplates.create(userCreated);
 
       return res.status(201).json({
         user: { _id: userCreated._id, name: userCreated.name, email: userCreated.email },

@@ -1,13 +1,12 @@
 import { Document } from "mongoose";
 
 export interface ITask extends Document {
-  title: string;
-  description: string;
+  name: string;
   status: "to do" | "doing" | "done";
 }
 
 export interface ITemplate extends Document {
-  title: string;
+  name: string;
   description: string;
   tasks: string[] | ITask[];
 }
