@@ -86,7 +86,7 @@ class TaskController {
       if (!taskFound) return res.status(400).send(`Task with id ${taskId} not found`);
 
       await TemplateModel.findOneAndUpdate(
-        { templates: taskFound._id },
+        { tasks: taskFound._id },
         { $pull: { tasks: taskFound._id } },
       ).exec();
       const result = await TaskModel.deleteOne({ _id: taskId }).exec();
