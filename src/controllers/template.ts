@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { validator } from "../shared";
 import { TemplateModel, TaskModel, UserModel } from "../models";
+import { ITask } from "../interfaces";
 
 class TemplateController {
   static async getByUser(req: Request, res: Response) {
@@ -89,6 +90,41 @@ class TemplateController {
       )
         .populate("tasks")
         .exec();
+
+      return res.status(200).json({ template: result });
+    } catch (error) {
+      return res.status(500).json({ message: error.message, error });
+    }
+  }
+
+  static async updateTasksIndexes(req: Request, res: Response) {
+    const { templateId } = req.params;
+    const { tasks } = req.body;
+
+    if (!Types.ObjectId.isValid(templateId)) {
+      return res.status(400).send("Invalid user id received");
+    }
+    if (!Array.isArray(tasks)) {
+      return res.status(400).send("Invalid tasks received");
+    }
+
+    try {
+      const tasksId: string[] = (tasks as ITask[]).map((task) => task._id);
+      const templateToUpdate = await TemplateModel.findById(templateId).exec();
+      if (!templateToUpdate) {
+        return res.status(400).send(`Template with id ${templateId} not found`);
+      }
+
+      const tasksIdToUpdate = templateToUpdate.tasks as string[];
+
+      const isValidTasks =
+        tasksIdToUpdate.every((taskId) => tasksId.includes(taskId.toString())) &&
+        tasksIdToUpdate.length === tasksId.length;
+      if (!isValidTasks) return res.status(400).send("Invalid tasks id received");
+
+      templateToUpdate.tasks = [...tasksId];
+      await templateToUpdate.save();
+      const result = await templateToUpdate.populate("tasks").execPopulate();
 
       return res.status(200).json({ template: result });
     } catch (error) {
