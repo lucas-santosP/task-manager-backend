@@ -1,7 +1,7 @@
 {
-  "name": "crud-users",
+  "name": "task-manager-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.ts",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon dist/server",
