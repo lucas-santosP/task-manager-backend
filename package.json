@@ -5,8 +5,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon dist/server",
+    "start": "node dist/server.js",
     "build": "tsc",
-    "start": "tsc & node dist/server.js",
+    "postinstall": "npm run build",
     "tsc-watch": "tsc -w"
   },
   "devDependencies": {
