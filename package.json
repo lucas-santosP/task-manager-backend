@@ -7,7 +7,6 @@
     "dev": "nodemon dist/server",
     "start": "node dist/server.js",
     "build": "tsc",
-    "postinstall": "npm run build",
     "tsc-watch": "tsc -w"
   },
   "devDependencies": {
