@@ -8,8 +8,6 @@ const DEFAULT_OPTIONS = {
 };
 
 function connectDB() {
-  console.log("process envs", process.env);
-
   const { DB_URL, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME } = process.env;
   if (DB_URL) {
     mongoose.connect(DB_URL, DEFAULT_OPTIONS);

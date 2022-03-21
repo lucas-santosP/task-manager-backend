@@ -6,7 +6,7 @@ const app = new App().express;
 const PORT = process.env.PORT || 3333;
 
 app.get("/", (req, res) => {
-  res.send("Hello World " + process.env.ACCESS_TOKEN_SECRET || "");
+  res.send("Hello World ");
 });
 
 app.listen(PORT, () => {
