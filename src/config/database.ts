@@ -8,9 +8,10 @@ const DEFAULT_OPTIONS = {
 };
 
 function connectDB() {
-  const { DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME } = process.env;
-
-  if (DB_USER || DB_PASS || DB_HOST || DB_PORT || DB_NAME) {
+  const { DB_URL, DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME } = process.env;
+  if (DB_URL) {
+    mongoose.connect(DB_URL, DEFAULT_OPTIONS);
+  } else if (DB_USER || DB_PASS || DB_HOST || DB_PORT || DB_NAME) {
     mongoose.connect(
       `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`,
       DEFAULT_OPTIONS,
