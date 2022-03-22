@@ -102,10 +102,7 @@ class UserController {
     if (req.userId !== userId) {
       return res.status(401).send("Unauthorized");
     }
-    const validationBody = validator.validateObjectKeys(
-      req.body,
-      "email name password newPassword",
-    );
+    const validationBody = validator.validateObjectKeys(req.body, "email name password");
     if (!validationBody.isOk) {
       return res.status(400).send(validationBody.message);
     }
@@ -121,7 +118,7 @@ class UserController {
       const passwordIsValid = await encrypter.compare(password, userFound.password);
       if (!passwordIsValid) return res.status(400).send("Invalid credentials");
 
-      if (password !== newPassword) {
+      if (newPassword && newPassword !== password) {
         const hashedNewPassword = await encrypter.generate(newPassword);
         userFound.password = hashedNewPassword;
       }
