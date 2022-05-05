@@ -1,6 +1,17 @@
 # Task Manager - Lucid Task
 
+<img src="https://raw.githubusercontent.com/lucas-santosP/task-manager/main/src/assets/images/logo.png" alt="Lucid Task Logo"/>
+
 This is the backend of the app, the frontend can be found on [this repository](https://github.com/lucas-santosP/task-manager-frontend). 
+
+
+# Built with
+
+- Node.js
+- Express
+- Typescript
+- Docker
+- MongoDB (Mongoose)
 
 # Setup
 
