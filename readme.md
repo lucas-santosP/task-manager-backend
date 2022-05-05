@@ -1,4 +1,4 @@
-# Task Manager - Lucid Task
+#  Lucid Task - Personal Task Manager (Backend)
 
 <img src="https://raw.githubusercontent.com/lucas-santosP/task-manager/main/src/assets/images/logo.png" alt="Lucid Task Logo"/>
 
