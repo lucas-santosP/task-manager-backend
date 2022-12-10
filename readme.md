@@ -12,6 +12,8 @@ This is the backend of the app, the frontend can be found on [this repository](h
 - Typescript
 - Docker
 - MongoDB (Mongoose)
+- API Deployed on [Render](https://render.com)
+- Database deployed on [Atlas clusters](www.mongodb.com/docs/atlas)
 
 # Setup
 
@@ -27,3 +29,4 @@ make up
 make down
 docker logs -f api
 ```
+
