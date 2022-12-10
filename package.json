@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon dist/server",
     "start": "node dist/server.js",
-    "build": "tsc",
+    "build": "yarn install && tsc",
     "tsc-watch": "tsc -w"
   },
   "devDependencies": {
